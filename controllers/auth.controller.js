@@ -12,10 +12,10 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
   try {
-    const token = await AuthService.login(email, password);
+    const token = await AuthService.login(username, password);
     res.json({ token });
   } catch (error) {
     res.status(400).json({ message: error.message });

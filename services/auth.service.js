@@ -20,10 +20,11 @@ class AuthService {
     );
   }
 
-  static async login(email, password) {
-    const [users] = await pool.execute("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
+  static async login(username, password) {
+    const [users] = await pool.execute(
+      "SELECT * FROM users WHERE username = ?",
+      [username]
+    );
 
     if (users.length === 0) {
       throw new Error("Invalid credentials");
