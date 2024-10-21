@@ -31,14 +31,14 @@ class AuthService {
     const [users] = await pool.execute("SELECT * FROM users WHERE username = ?", [username]);
 
     if (users.length === 0) {
-      throw new Error("Invalid credentials");
+      throw new Error(`User ${username} does not exist`);
     }
 
     const user = users[0];
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      throw new Error("Invalid credentials");
+      throw new Error("Invalid password");
     }
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
