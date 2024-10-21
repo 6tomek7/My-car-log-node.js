@@ -4,27 +4,31 @@ const pool = require("../config/db");
 
 class AuthService {
   static async register(username, email, password) {
-    const [existingUser] = await pool.execute(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
-    );
+    const [existingUsers] = await pool.execute("SELECT * FROM users WHERE email = ? OR username = ?", [
+      email,
+      username,
+    ]);
 
-    if (existingUser.length > 0) {
-      throw new Error("User already exists");
+    if (existingUsers.length > 0) {
+      const existingUser = existingUsers[0];
+      if (existingUser.username === username) {
+        throw new Error("Username already exists");
+      }
+      if (existingUser.email === email) {
+        throw new Error("Email already exists");
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await pool.execute(
-      "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-      [username, email, hashedPassword]
-    );
+    await pool.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", [
+      username,
+      email,
+      hashedPassword,
+    ]);
   }
 
   static async login(username, password) {
-    const [users] = await pool.execute(
-      "SELECT * FROM users WHERE username = ?",
-      [username]
-    );
+    const [users] = await pool.execute("SELECT * FROM users WHERE username = ?", [username]);
 
     if (users.length === 0) {
       throw new Error("Invalid credentials");
