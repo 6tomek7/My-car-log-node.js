@@ -16,7 +16,7 @@ exports.login = async (req, res) => {
 
   try {
     const token = await AuthService.login(username, password);
-    res.json({ token });
+    res.json(token);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
