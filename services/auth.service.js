@@ -46,6 +46,27 @@ class AuthService {
     });
     return { id: user.id, username: user.username, token: token };
   }
+
+  static async updatePassword(username, oldPassword, newPassword) {
+    const [users] = await pool.execute("SELECT * FROM users WHERE username = ?", [username]);
+    const user = users[0];
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isMatch) {
+      throw new Error("Invalid password");
+    }
+
+    if (isMatch) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await pool.execute("UPDATE users SET password = ? WHERE username = ?", [hashedPassword, username]);
+    }
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    return { id: user.id, username: user.username, token: token };
+  }
 }
 
 module.exports = AuthService;

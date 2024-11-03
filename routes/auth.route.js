@@ -6,6 +6,7 @@ const authRouter = express.Router();
 
 authRouter.post("/register", authController.register);
 authRouter.post("/login", authController.login);
+authRouter.put("/update-password", authController.updatePassword);
 
 // Example of a protected route
 authRouter.get("/protected", authMiddleware, (req, res) => {

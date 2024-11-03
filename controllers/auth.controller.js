@@ -21,3 +21,14 @@ exports.login = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+exports.updatePassword = async (req, res) => {
+  const { username, oldPassword, newPassword } = req.body;
+
+  try {
+    const newToken = await AuthService.updatePassword(username, oldPassword, newPassword);
+    res.json(newToken);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
